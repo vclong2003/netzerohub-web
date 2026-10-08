@@ -6,23 +6,34 @@ import styled from "styled-components";
 import Typo from "@/components/Typo";
 import Button from "@/components/Button";
 import Link from "next/link";
+import { AuthQueries } from "@/services/service.auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { AuthStorage } from "@/auth/auth.utils";
+import { useRouter } from "next/navigation";
 
 export default function UserActions() {
-  // const { me } = useMe();
+  const router = useRouter();
+  const { data: me } = AuthQueries.useMyAccount();
+  const queryClient = useQueryClient();
+
+  const logout = () => {
+    AuthStorage.clearAuthStorage();
+    queryClient.clear();
+    router.replace("/login");
+  };
 
   const Menu = (
     <S.UserActionsMenu>
       <S.UserInfo>
         <Avatar username="admin" />
-        <S.Username variant="h5">
-          okok
-          {/* {me?.firstName + " " + me?.lastName} */}
-        </S.Username>
+        <div>
+          <S.Username variant="body1">
+            {me?.firstName + " " + me?.lastName}
+          </S.Username>
+          <S.Email variant="body2">{me?.email}</S.Email>
+        </div>
       </S.UserInfo>
-      <S.LogoutBtn
-        size="large"
-        // onClick={logout}
-      >
+      <S.LogoutBtn size="large" onClick={logout}>
         Sign Out
       </S.LogoutBtn>
     </S.UserActionsMenu>
@@ -47,8 +58,12 @@ namespace S {
     align-items: center;
     margin-bottom: var(--s-5);
   `;
+
   export const Username = styled(Typo)`
     color: var(--c-black);
+  `;
+  export const Email = styled(Typo)`
+    color: #a5a5a5;
   `;
 
   export const LogoutBtn = styled(Button)`

@@ -1,6 +1,12 @@
+"use client";
+
+import { useQueryClient } from "@/services/_config.queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 
 export default function AppLayout({ children }: LayoutProps<"/">) {
+  const { queryClient } = useQueryClient();
+
   return (
     <>
       <ToastContainer
@@ -15,7 +21,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
         pauseOnHover
         theme="colored"
       />
-      {children}
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </>
   );
 }

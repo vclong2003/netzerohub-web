@@ -6,10 +6,29 @@ import Link from "next/link";
 import styled from "styled-components";
 import { Formik, Form as FormikForm } from "formik";
 import Input from "@/components/Input";
+import { AuthMutations, AuthQueries } from "@/services/service.auth";
+import { useRouter } from "next/navigation";
+import { AuthStorage } from "@/auth/auth.utils";
+import { notifyError } from "@/utils/utils.notification";
 
 export default function Login() {
-  const onSubmit = (values: unknown) => {
-    console.log(values);
+  const router = useRouter();
+  const { data: me, isPending: isMePending } = AuthQueries.useMyAccount();
+  const { mutate: login, isPending: isLoginPending } = AuthMutations.useLogin();
+
+  if (!!me?.id) router.replace("/");
+
+  const onSubmit = (values: AuthMutations.ILoginPayload) => {
+    login(values, {
+      onSuccess: (data) => {
+        AuthStorage.setRefreshToken(data.refreshToken);
+        AuthStorage.setAccessToken(data.accessToken);
+        router.replace("/");
+      },
+      onError: (error) => {
+        notifyError(error.message);
+      },
+    });
   };
 
   return (
@@ -34,8 +53,7 @@ export default function Login() {
           <S.LoginButton
             size="large"
             type="submit"
-            // disabled={isPending}
-          >
+            disabled={isMePending || isLoginPending}>
             Login
           </S.LoginButton>
         </S.Form>

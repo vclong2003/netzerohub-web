@@ -50,7 +50,7 @@ api.interceptors.response.use(
         ? error.response.data
         : error.response?.data?.message) || "An error occurred";
     if (serverMessage) error.message = serverMessage;
-    console.log("----- api error:", error);
+    // console.log("----- api error:", error);
     return Promise.reject(error);
   },
 );
