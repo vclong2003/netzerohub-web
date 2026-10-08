@@ -48,7 +48,7 @@ namespace S {
     text-decoration: none;
     background-color: transparent;
     &.active {
-      background-color: #127f851a;
+      background-color: rgba(18, 127, 133, 0.08);
     }
   `;
 

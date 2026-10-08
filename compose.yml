@@ -1,0 +1,9 @@
+services:
+  netzerohub-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: NetZeroHub-Web
+    restart: unless-stopped
+    ports:
+      - "4001:4000"
