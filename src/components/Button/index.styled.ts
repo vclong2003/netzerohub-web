@@ -9,7 +9,7 @@ interface IButtonProps {
 export const Button = styled.button<IButtonProps>`
   padding: ${({ size }) =>
     size === "large" ? "var(--s-3) var(--s-6)" : "var(--s-2) var(--s-4)"};
-  background-color: var(--c-blue);
+  background-color: var(--c-green-8);
   color: var(--c-white);
   border-radius: var(--br-1);
   font-size: ${({ size }) =>

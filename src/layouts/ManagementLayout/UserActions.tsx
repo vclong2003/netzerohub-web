@@ -1,3 +1,5 @@
+"use client";
+
 import { Popover } from "antd";
 import { Avatar } from "@/components/Avatar";
 import styled from "styled-components";

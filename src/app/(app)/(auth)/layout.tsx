@@ -1,3 +1,3 @@
-export default function AuthLayout({ children }: LayoutProps<"/">) {
-  return children;
-}
+import AuthLayout from "@/layouts/AuthLayout";
+
+export default AuthLayout;

@@ -1,9 +1,10 @@
 import DrawerItem from "./DrawerItem";
 
-import ParkingLotApprovalIcon from "@/assets/icons/parking-lot-approval.png";
+import GreenChargingStationIcon from "@/assets/icons/charging-stations.png";
 import OverviewIcon from "@/assets/icons/overview.png";
-import SystemMetricsIcon from "@/assets/icons/system-metrics.png";
-import PayrollIcon from "@/assets/icons/payroll.png";
+import AccountIcon from "@/assets/icons/account.png";
+import PollutionReportIcon from "@/assets/icons/pollution-report.png";
+import RecyclingCentersIcon from "@/assets/icons/recycling-centers.png";
 import styled from "styled-components";
 import Typo from "@/components/Typo";
 
@@ -13,20 +14,26 @@ const DRAWER_ITEMS = [
     label: "Overview",
     icon: OverviewIcon,
   },
+
   {
-    to: "/system-metrics",
-    label: "System Metrics",
-    icon: SystemMetricsIcon,
+    to: "/pollution-report",
+    label: "Pollution Report",
+    icon: PollutionReportIcon,
   },
   {
-    to: "/parking-lots",
-    label: "Parking Lots",
-    icon: ParkingLotApprovalIcon,
+    to: "/recycling-centers",
+    label: "Recycling Centers",
+    icon: RecyclingCentersIcon,
   },
   {
-    to: "/payout",
-    label: "Payout",
-    icon: PayrollIcon,
+    to: "/green-charging-stations",
+    label: "Green Charging Stations",
+    icon: GreenChargingStationIcon,
+  },
+  {
+    to: "/accounts",
+    label: "Accounts",
+    icon: AccountIcon,
   },
 ];
 

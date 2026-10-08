@@ -21,7 +21,7 @@ const ManagementPage = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  min-width: 1550px;
+  min-width: 1200px;
 `;
 
 const ContentContainer = styled.div`
