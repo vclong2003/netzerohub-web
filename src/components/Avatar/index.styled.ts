@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 export const Avatar = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   background-color: var(--c-yellow);
   color: var(--c-white);
   border-radius: 50%;

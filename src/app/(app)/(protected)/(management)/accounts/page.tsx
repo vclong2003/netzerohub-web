@@ -1,5 +1,3 @@
-import Image from "next/image";
-
-export default function RootPage() {
-  return <div>account</div>;
+export default function Account() {
+  return <div>Accounts</div>;
 }
