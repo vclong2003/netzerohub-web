@@ -30,11 +30,11 @@ const DRAWER_ITEMS = [
     label: "Green Charging Stations",
     icon: GreenChargingStationIcon,
   },
-  {
-    to: "/accounts",
-    label: "Accounts",
-    icon: AccountIcon,
-  },
+  // {
+  //   to: "/accounts",
+  //   label: "Accounts",
+  //   icon: AccountIcon,
+  // },
 ];
 
 export default function Drawer() {

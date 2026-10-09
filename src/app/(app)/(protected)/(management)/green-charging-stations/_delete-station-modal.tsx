@@ -38,7 +38,7 @@ export function DeleteStationModal({
       confirmLoading={isPending}
       onCancel={onClose}>
       <Typo variant="body1">
-        Do you want to delete station <b>{station?.name}</b>
+        Do you want to delete station <i>{station?.name}</i>
       </Typo>
     </Modal>
   );

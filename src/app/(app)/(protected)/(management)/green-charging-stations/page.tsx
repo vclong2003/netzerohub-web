@@ -57,17 +57,17 @@ export default function GreenChargingStations() {
         align: "center",
       },
       {
-        title: "Name",
+        title: "Station Name",
         dataIndex: "name",
         key: "name",
       },
       {
-        title: "Images",
-        dataIndex: "imageUrls",
-        key: "imageUrls",
-        render: (imageUrls: string[]) => imageUrls?.length || 0,
-        align: "center",
+        title: "Renewable Energy %",
+        dataIndex: "renewableEnergyPercent",
+        key: "renewableEnergyPercent",
+        width: 160,
       },
+
       {
         title: "Latitude",
         dataIndex: "latitude",
@@ -81,17 +81,18 @@ export default function GreenChargingStations() {
         width: 100,
       },
       {
+        title: "Images",
+        dataIndex: "imageUrls",
+        key: "imageUrls",
+        render: (imageUrls: string[]) => imageUrls?.length || 0,
+        align: "center",
+      },
+      {
         title: "Status",
         dataIndex: "status",
         key: "status",
         width: 100,
         align: "center",
-      },
-      {
-        title: "Renewable Energy %",
-        dataIndex: "renewableEnergyPercent",
-        key: "renewableEnergyPercent",
-        width: 160,
       },
     ],
   };
@@ -109,7 +110,7 @@ export default function GreenChargingStations() {
         />
       )}
       <PageHeading
-        title="NRMA Green Charging Stations"
+        title="NRMA - Green EV Charging Solutions"
         variant="search"
         initSearchValue={searchValue}
         onSearch={setSearchValue}

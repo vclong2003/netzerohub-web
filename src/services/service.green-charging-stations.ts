@@ -97,6 +97,22 @@ export namespace GreenChargingStationsMutations {
     removalImageUrls?: string[];
   }
 
+  export interface ICreatePlugPayload {
+    identifier: string;
+    status: EPlugStatus;
+    type: EPlugType;
+    currentType: ECurrentType;
+    powerKw: number;
+  }
+
+  export interface IUpdatePlugPayload {
+    identifier?: string;
+    status?: EPlugStatus;
+    type?: EPlugType;
+    currentType?: ECurrentType;
+    powerKw?: number;
+  }
+
   export function useCreateStation() {
     const queryClient = useQueryClient();
 
@@ -134,6 +150,54 @@ export namespace GreenChargingStationsMutations {
       mutationFn: () => api.delete(`/green-charging-stations/${stationId}`),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["useGetStations"] });
+      },
+    });
+  }
+
+  export function useCreatePlug(stationId: number) {
+    const queryClient = useQueryClient();
+
+    return useMutation<IPlug, Error, ICreatePlugPayload>({
+      mutationKey: ["useCreatePlug", stationId],
+      mutationFn: (payload: ICreatePlugPayload) =>
+        api.post(`/green-charging-stations/${stationId}/plugs`, payload),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["useGetStationById", stationId],
+        });
+      },
+    });
+  }
+
+  export function useUpdatePlug(stationId: number, plugId: number) {
+    const queryClient = useQueryClient();
+
+    return useMutation<IPlug, Error, IUpdatePlugPayload>({
+      mutationKey: ["useUpdatePlug", stationId, plugId],
+      mutationFn: (payload: IUpdatePlugPayload) =>
+        api.put(
+          `/green-charging-stations/${stationId}/plugs/${plugId}`,
+          payload,
+        ),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["useGetStationById", stationId],
+        });
+      },
+    });
+  }
+
+  export function useDeletePlug(stationId: number, plugId: number) {
+    const queryClient = useQueryClient();
+
+    return useMutation<void, Error, void>({
+      mutationKey: ["useDeletePlug", stationId, plugId],
+      mutationFn: () =>
+        api.delete(`/green-charging-stations/${stationId}/plugs/${plugId}`),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["useGetStationById", stationId],
+        });
       },
     });
   }

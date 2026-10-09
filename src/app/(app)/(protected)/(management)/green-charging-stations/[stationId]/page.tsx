@@ -20,6 +20,7 @@ import Input from "@/components/Input";
 import Table from "@/components/Table";
 import Select from "@/components/Select";
 import { getFileNameFromUrl } from "@/utils/utils.file";
+import { PlugsManager } from "./_plugs-manager";
 
 interface IImageItem {
   id: string;
@@ -305,6 +306,10 @@ export default function GreenChargingStationUpdate() {
           </Table>
         </S.TableContainer>
       </S.ImagesManagerContainer>
+
+      <div style={{ height: "var(--s-4)" }} />
+
+      <PlugsManager station={station} isLoading={isLoading} />
     </S.UpdateGreenChargingStation>
   );
 }
