@@ -1,7 +1,7 @@
-import { Table as BaseTable } from "antd";
 import * as S from "./index.styled";
-import { ComponentProps } from "react";
+import { TableProps } from "antd";
 
-export default function Table({ ...props }: ComponentProps<typeof BaseTable>) {
+interface ITableProps extends TableProps {}
+export default function Table({ ...props }: ITableProps) {
   return <S.Table {...props} />;
 }
