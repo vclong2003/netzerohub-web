@@ -97,7 +97,7 @@ export default function AddGreenChargingStation() {
   return (
     <S.GreenChargingStations>
       <PageHeading
-        title="NRMA Green Charging Stations"
+        title="Add New Charging Station"
         variant="add"
         onAdd={handleAdd}
         disabled={isCreating || isUploading}

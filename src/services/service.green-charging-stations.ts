@@ -93,7 +93,8 @@ export namespace GreenChargingStationsMutations {
     longitude?: number;
     renewableEnergyPercent?: number;
     status?: EStationStatus;
-    imageUrls?: string[];
+    additionalImageUrls?: string[];
+    removalImageUrls?: string[];
   }
 
   export function useCreateStation() {
