@@ -15,7 +15,7 @@ import Column from "antd/es/table/Column";
 import Table from "@/components/Table";
 import Button from "@/components/Button";
 
-interface IUploadedImage {
+interface IImage {
   id: string;
   name: string;
   bucketUrl: string;
@@ -33,7 +33,7 @@ export default function AddGreenChargingStation() {
   type FormValues = GreenChargingStationsMutations.ICreateStationPayload;
   const formRef = useRef<FormikProps<FormValues>>(null);
 
-  const [uploadedImages, setUploadedImages] = useState<IUploadedImage[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<IImage[]>([]);
 
   const onFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -42,7 +42,7 @@ export default function AddGreenChargingStation() {
     const localUrl = URL.createObjectURL(file);
     try {
       const response = await uploadImage({ file });
-      const newImage: IUploadedImage = {
+      const newImage: IImage = {
         id: crypto.randomUUID(),
         name: file.name,
         bucketUrl: response.bucketUrl,
@@ -66,16 +66,13 @@ export default function AddGreenChargingStation() {
     });
   };
 
-  const handleViewImage = (image: IUploadedImage) => {
+  const handleViewImage = (image: IImage) => {
     window.open(image.localUrl, "_blank");
   };
 
   const onSubmit = (values: FormValues) => {
     const payload: FormValues = {
       ...values,
-      latitude: Number(values.latitude),
-      longitude: Number(values.longitude),
-      renewableEnergyPercent: Number(values.renewableEnergyPercent),
       imageUrls: uploadedImages.map((img) => img.bucketUrl),
     };
 
@@ -95,7 +92,7 @@ export default function AddGreenChargingStation() {
   };
 
   return (
-    <S.GreenChargingStations>
+    <S.AddChargingStation>
       <PageHeading
         title="Add New Charging Station"
         variant="add"
@@ -115,7 +112,7 @@ export default function AddGreenChargingStation() {
           onSubmit={onSubmit}>
           <Row>
             <Col span={12}>
-              {/* Name ------------------------------------------------------- */}
+              {/* Name ------------------------------------ */}
               <S.FormGroup>
                 <S.LabelCol
                   span={9}
@@ -126,7 +123,7 @@ export default function AddGreenChargingStation() {
                   <Input name="name" placeholder="NRMA CS543 UOW Campus" />
                 </Col>
               </S.FormGroup>
-              {/* Mobile NO -------------------------------------------------- */}
+              {/* Renewable ------------------------------- */}
               <S.FormGroup>
                 <S.LabelCol
                   span={9}
@@ -151,7 +148,11 @@ export default function AddGreenChargingStation() {
                   <Typo variant="body1">Latitude:</Typo>
                 </S.LabelCol>
                 <Col span={15}>
-                  <Input name="latitude" placeholder="-35.707740" />
+                  <Input
+                    name="latitude"
+                    placeholder="-35.707740"
+                    type="number"
+                  />
                 </Col>
               </S.FormGroup>
               {/* Lon ----------------------------------- */}
@@ -210,12 +211,12 @@ export default function AddGreenChargingStation() {
             dataSource={uploadedImages}
             rowKey="id"
             loading={isUploading}>
-            <Column<IUploadedImage>
+            <Column<IImage>
               title="No"
               width={60}
               render={(_, __, index) => index + 1}
             />
-            <Column<IUploadedImage>
+            <Column<IImage>
               title="File Name"
               dataIndex="name"
               render={(name: string, record) => (
@@ -224,7 +225,7 @@ export default function AddGreenChargingStation() {
                 </S.FileNameLink>
               )}
             />
-            <Column<IUploadedImage>
+            <Column<IImage>
               title="Action"
               width={160}
               render={(_, record) => (
@@ -245,12 +246,12 @@ export default function AddGreenChargingStation() {
           </Table>
         </S.TableContainer>
       </S.ImagesManagerContainer>
-    </S.GreenChargingStations>
+    </S.AddChargingStation>
   );
 }
 
 namespace S {
-  export const GreenChargingStations = styled.div`
+  export const AddChargingStation = styled.div`
     width: 100%;
   `;
 

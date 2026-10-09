@@ -12,6 +12,7 @@ import PageHeading from "./_page-heading";
 import { useState } from "react";
 import useDebounce from "@/hooks/hooks.debounce";
 import { useRouter } from "next/navigation";
+import { DeleteStationModal } from "./_delete-station-modal";
 
 const PAGE_SIZE = 10;
 
@@ -19,6 +20,8 @@ export default function GreenChargingStations() {
   const [page, setPage] = useState(1);
   const [selectedRowKey, setSelectedRowKey] = useState<number>();
   const [searchValue, setSearchValue] = useDebounce<string>();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const router = useRouter();
 
   const { data, isLoading } = GreenChargingStationsQueries.useGetStations({
@@ -95,6 +98,16 @@ export default function GreenChargingStations() {
 
   return (
     <S.GreenChargingStations>
+      {showDeleteModal && (
+        <DeleteStationModal
+          station={stations.find((station) => station.id === selectedRowKey)}
+          onClose={() => setShowDeleteModal(false)}
+          onDelete={() => {
+            setSelectedRowKey(undefined);
+            setShowDeleteModal(false);
+          }}
+        />
+      )}
       <PageHeading
         title="NRMA Green Charging Stations"
         variant="search"
@@ -108,10 +121,10 @@ export default function GreenChargingStations() {
             <S.BtnIcon src={Add.src} />
             Add
           </S.AddBtn>
+
           <S.DeleteBtn
-          // disabled={selectedRowKeys.length === 0}
-          // onClick={openDeleteModal}
-          >
+            disabled={!selectedRowKey}
+            onClick={() => setShowDeleteModal(true)}>
             <S.BtnIcon src={Trash.src} />
             Delete
           </S.DeleteBtn>

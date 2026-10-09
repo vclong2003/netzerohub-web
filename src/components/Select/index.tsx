@@ -3,7 +3,6 @@ import * as S from "./index.styled";
 import { Field, useFormikContext } from "formik";
 
 interface ISelectProps extends SelectProps {
-  children: React.ReactNode;
   name: string;
   error?: string;
 }
