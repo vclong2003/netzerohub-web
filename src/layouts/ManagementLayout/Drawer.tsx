@@ -53,7 +53,7 @@ namespace S {
     flex-direction: column;
     padding: var(--s-6);
     margin-top: var(--s-1);
-    background-color: var(--c-white-5);
+    background-color: var(--c-white);
   `;
 
   export const Title = styled(Typo)`

@@ -33,4 +33,4 @@ export const Table = styled(BaseTable)`
     background-color: var(--c-green);
     border-color: var(--c-white);
   }
-`;
+` as typeof BaseTable;

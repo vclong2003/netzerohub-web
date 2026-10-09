@@ -1,13 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { IAccount } from "./_types";
 import { api } from "./_config.api";
+
+export enum EAccountRole {
+  User = "User",
+  Admin = "Admin",
+}
+
+export interface IAccount {
+  id: number;
+  code: string;
+  email: string;
+  role: EAccountRole;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export namespace AuthQueries {
   export function useMyAccount() {
     return useQuery<IAccount>({
       queryKey: ["useMyAccount"],
       queryFn: ({ signal }) => api.get("/account/me", { signal }),
-      retry: 1,
     });
   }
 }
