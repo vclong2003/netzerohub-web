@@ -13,7 +13,6 @@ import { useState } from "react";
 import styled from "styled-components";
 import { CreatePlugModal } from "./_create-plug-modal";
 import { EditPlugModal } from "./_edit-plug-modal";
-import Button from "@/components/Button";
 import { DeletePlugModal } from "./_delete-plug-modal";
 
 const statusConfig: Record<EPlugStatus, { color: string; label: string }> = {
