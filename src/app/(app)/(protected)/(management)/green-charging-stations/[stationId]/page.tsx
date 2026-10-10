@@ -43,8 +43,11 @@ export default function GreenChargingStationUpdate() {
 
   const stationId = Number(params.stationId);
 
-  const { data: station, isLoading } =
-    GreenChargingStationsQueries.useGetStationById(stationId);
+  const {
+    data: station,
+    isLoading,
+    isFetching,
+  } = GreenChargingStationsQueries.useGetStationById(stationId);
   const { mutate, isPending: isUpdating } =
     GreenChargingStationsMutations.useUpdateStation(stationId);
   const { mutateAsync: uploadImage, isPending: isUploading } =
@@ -122,7 +125,7 @@ export default function GreenChargingStationUpdate() {
     };
     mutate(payload, {
       onSuccess: () => {
-        notifySuccess("Charging station updated successfully");
+        notifySuccess("Station updated successfully");
         router.push("/green-charging-stations");
       },
       onError: (error) => {
@@ -309,7 +312,7 @@ export default function GreenChargingStationUpdate() {
 
       <div style={{ height: "var(--s-4)" }} />
 
-      <PlugsManager station={station} isLoading={isLoading} />
+      <PlugsManager station={station} isLoading={isLoading || isFetching} />
     </S.UpdateGreenChargingStation>
   );
 }

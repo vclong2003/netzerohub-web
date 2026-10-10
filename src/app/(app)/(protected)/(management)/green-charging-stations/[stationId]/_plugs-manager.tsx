@@ -4,6 +4,7 @@ import {
   ECurrentType,
   EPlugStatus,
   EPlugType,
+  IPlug,
   IStation,
 } from "@/services/service.green-charging-stations";
 import { Col, Row, Tag } from "antd";
@@ -11,6 +12,8 @@ import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import styled from "styled-components";
 import { CreatePlugModal } from "./_create-plug-modal";
+import { EditPlugModal } from "./_edit-plug-modal";
+import { DeletePlugModal } from "./_delete-plug-modal";
 
 const statusConfig: Record<EPlugStatus, { color: string; label: string }> = {
   [EPlugStatus.Available]: { color: "green", label: "Available" },
@@ -41,6 +44,8 @@ export function PlugsManager({
 }) {
   const [selectedRowKey, setSelectedRowKey] = useState<number>();
   const [showCreatePlugModal, setShowCreatePlugModal] = useState(false);
+  const [showDeletePlugModal, setShowDeletePlugModal] = useState(false);
+  const [selectedPlug, setSelectedPlug] = useState<IPlug>();
 
   const plugs = station?.plugs || [];
 
@@ -107,6 +112,26 @@ export function PlugsManager({
 
   return (
     <S.PlugsContainer>
+      {showDeletePlugModal && selectedRowKey && (
+        <DeletePlugModal
+          stationId={station?.id || 0}
+          plug={plugs.find((plug) => plug.id === selectedRowKey)!}
+          onClose={() => setShowDeletePlugModal(false)}
+          onDelete={() => {
+            setSelectedRowKey(undefined);
+            setShowDeletePlugModal(false);
+          }}
+        />
+      )}
+
+      {selectedPlug && (
+        <EditPlugModal
+          stationId={station?.id || 0}
+          plug={selectedPlug}
+          onClose={() => setSelectedPlug(undefined)}
+        />
+      )}
+
       {showCreatePlugModal && (
         <CreatePlugModal
           stationId={station?.id || 0}
@@ -119,6 +144,16 @@ export function PlugsManager({
         <S.CreateBtn onClick={() => setShowCreatePlugModal(true)}>
           <Typo variant="body1">Create</Typo>
         </S.CreateBtn>
+        {!!selectedRowKey && (
+          <S.DeleteBtn onClick={() => setShowDeletePlugModal(true)}>
+            <Typo variant="body1">Delete</Typo>
+          </S.DeleteBtn>
+        )}
+        {!!selectedRowKey && (
+          <S.CancelBtn onClick={() => setSelectedRowKey(undefined)}>
+            <Typo variant="body1">Cancel</Typo>
+          </S.CancelBtn>
+        )}
       </S.HeaderCol>
 
       <S.TableCol span={24}>
@@ -129,6 +164,10 @@ export function PlugsManager({
           loading={isLoading}
           columns={columns}
           locale={{ emptyText: "No plugs registered for this station" }}
+          onRow={(record) => ({
+            style: { cursor: "pointer" },
+            onClick: () => setSelectedPlug(record as IPlug),
+          })}
           rowSelection={{
             type: "radio",
             selectedRowKeys: selectedRowKey ? [selectedRowKey] : [],
@@ -168,6 +207,26 @@ namespace S {
     border-radius: var(--br-1);
     border: 1px dashed var(--c-blue);
     color: var(--c-blue);
+    cursor: pointer;
+  `;
+
+  export const DeleteBtn = styled.div`
+    background-color: var(--c-pink);
+    padding: var(--s-1) var(--s-3);
+    width: fit-content;
+    border-radius: var(--br-1);
+    border: 1px dashed var(--c-red);
+    color: var(--c-red);
+    cursor: pointer;
+  `;
+
+  export const CancelBtn = styled.div`
+    background-color: var(--c-white-1);
+    padding: var(--s-1) var(--s-3);
+    width: fit-content;
+    border-radius: var(--br-1);
+    border: 1px dashed var(--c-black);
+    color: var(--c-black);
     cursor: pointer;
   `;
 }

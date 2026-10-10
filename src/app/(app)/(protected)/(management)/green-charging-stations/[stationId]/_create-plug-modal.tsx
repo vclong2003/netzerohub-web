@@ -168,7 +168,7 @@ namespace S {
   `;
 
   export const CancelBtn = styled(Button)`
-    background-color: var(--c-white-5);
+    background-color: var(--c-white-3);
     color: var(--c-black);
   `;
 
