@@ -122,7 +122,7 @@ export default function GreenChargingStationUpdate() {
     };
     mutate(payload, {
       onSuccess: () => {
-        notifySuccess("Charging station updated successfully");
+        notifySuccess("Station updated successfully");
         router.push("/green-charging-stations");
       },
       onError: (error) => {
