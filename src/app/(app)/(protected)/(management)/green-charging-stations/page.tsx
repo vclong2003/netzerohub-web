@@ -44,7 +44,8 @@ export default function GreenChargingStations() {
       },
     },
     onRow: (record) => ({
-      onDoubleClick: () => {
+      style: { cursor: "pointer" },
+      onClick: () => {
         router.push(`/green-charging-stations/${record.id}`);
       },
     }),
