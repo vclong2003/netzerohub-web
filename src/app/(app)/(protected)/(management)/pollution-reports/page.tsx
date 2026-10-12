@@ -144,14 +144,6 @@ export default function PollutionReports() {
         setSelectedRowKeys(keys as number[]);
       },
     },
-    onRow: (record) => ({
-      style: { cursor: "pointer" },
-      onClick: (e) => {
-        const target = e.target as HTMLElement;
-        if (target.closest(".ant-table-selection-column")) return;
-        router.push(`/pollution-reports/${record.id}`);
-      },
-    }),
     columns: [
       {
         title: "ID",
