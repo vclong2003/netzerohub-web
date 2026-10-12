@@ -100,8 +100,9 @@ export default function GreenChargingStations() {
 
   return (
     <S.GreenChargingStations>
-      {showDeleteModal && (
+      {!!selectedRowKey && (
         <DeleteStationModal
+          isOpen={showDeleteModal}
           station={stations.find((station) => station.id === selectedRowKey)}
           onClose={() => setShowDeleteModal(false)}
           onDelete={() => {
@@ -114,10 +115,13 @@ export default function GreenChargingStations() {
         title="NRMA - Green EV Charging Solutions"
         variant="search"
         initSearchValue={searchValue}
-        onSearch={setSearchValue}
+        onSearch={(val) => {
+          setSearchValue(val);
+          setPage(1);
+        }}
       />
       <S.TableContainer>
-        {/* Table header buttons --------------------------- */}
+        {/* Table header -------------------------------------------- */}
         <S.BtnsContainer>
           <S.AddBtn onClick={() => router.push("/green-charging-stations/add")}>
             <S.BtnIcon src={Add.src} />
@@ -138,9 +142,11 @@ export default function GreenChargingStations() {
           )}
         </S.BtnsContainer>
         <S.Divider />
+
         {/* Table ---------------------------------------------------- */}
         <Table {...tableProps} />
         <S.Divider />
+
         {/* Pagination ----------------------------------------------- */}
         <Pagination
           current={page}
