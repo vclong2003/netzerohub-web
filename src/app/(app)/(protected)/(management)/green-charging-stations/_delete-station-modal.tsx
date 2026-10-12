@@ -6,12 +6,14 @@ import {
 import { Modal } from "antd";
 
 interface IDeleteModalProps {
+  isOpen: boolean;
   station?: IStation;
   onClose: () => void;
   onDelete: () => void;
 }
 
 export function DeleteStationModal({
+  isOpen,
   station,
   onClose,
   onDelete,
@@ -33,7 +35,7 @@ export function DeleteStationModal({
   return (
     <Modal
       title="Confirm deletion"
-      open={true}
+      open={isOpen}
       onOk={destroy}
       confirmLoading={isPending}
       onCancel={onClose}>

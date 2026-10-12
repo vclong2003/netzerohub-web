@@ -2,7 +2,6 @@ import DrawerItem from "./DrawerItem";
 
 import GreenChargingStationIcon from "@/assets/icons/charging-stations.png";
 import OverviewIcon from "@/assets/icons/overview.png";
-import AccountIcon from "@/assets/icons/account.png";
 import PollutionReportIcon from "@/assets/icons/pollution-report.png";
 import RecyclingCentersIcon from "@/assets/icons/recycling-centers.png";
 import styled from "styled-components";
@@ -16,7 +15,7 @@ const DRAWER_ITEMS = [
   },
 
   {
-    to: "/pollution-report",
+    to: "/pollution-reports",
     label: "Pollution Report",
     icon: PollutionReportIcon,
   },
