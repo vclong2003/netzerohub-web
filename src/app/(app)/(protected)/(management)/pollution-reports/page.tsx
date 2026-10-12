@@ -162,7 +162,7 @@ export default function PollutionReports() {
             <div
               style={{
                 fontSize: 13,
-                color: "var(--c-gray-1, #666)",
+                color: "var(--c-gray, #666)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
