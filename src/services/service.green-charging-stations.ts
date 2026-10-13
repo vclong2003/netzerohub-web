@@ -74,6 +74,8 @@ export namespace GreenChargingStationsQueries {
       queryKey: ["useGetStationById", stationId],
       queryFn: ({ signal }) =>
         api.get(`/green-charging-stations/${stationId}`, { signal }),
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
     });
   }
 }
@@ -133,11 +135,11 @@ export namespace GreenChargingStationsMutations {
       mutationKey: ["useUpdateStation", stationId],
       mutationFn: (payload: IUpdateStationPayload) =>
         api.put(`/green-charging-stations/${stationId}`, payload),
-      onSuccess: () => {
-        queryClient.invalidateQueries({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
           queryKey: ["useGetStationById", stationId],
         });
-        queryClient.invalidateQueries({ queryKey: ["useGetStations"] });
+        await queryClient.invalidateQueries({ queryKey: ["useGetStations"] });
       },
     });
   }

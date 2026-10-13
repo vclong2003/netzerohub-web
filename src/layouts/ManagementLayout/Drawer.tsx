@@ -20,8 +20,8 @@ const DRAWER_ITEMS = [
     icon: PollutionReportIcon,
   },
   {
-    to: "/recycling-centers",
-    label: "Recycling Centers",
+    to: "/recycling-centres",
+    label: "Recycling Centres",
     icon: RecyclingCentersIcon,
   },
   {
