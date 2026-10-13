@@ -6,7 +6,6 @@ import { TableProps, Tag, Pagination } from "antd";
 import styled from "styled-components";
 import { useMemo, useState } from "react";
 import useDebounce from "@/hooks/hooks.debounce";
-import { useRouter } from "next/navigation";
 import PageHeading from "./_page-heading";
 import {
   EPollutionReportStatus,
@@ -73,7 +72,6 @@ const ALL_MOCK_REPORTS: IPollutionReportItem[] = Array.from(
 const PAGE_SIZE = 10;
 
 export default function PollutionReports() {
-  const router = useRouter();
   const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useDebounce<string>();
   const reports = ALL_MOCK_REPORTS;
@@ -230,7 +228,7 @@ export default function PollutionReports() {
   return (
     <S.PollutionReports>
       <PageHeading
-        title="Pollution Reports"
+        title="NSW EPA - Pollution Reports"
         initSearchValue={searchValue}
         onSearch={(val) => {
           setSearchValue(val);

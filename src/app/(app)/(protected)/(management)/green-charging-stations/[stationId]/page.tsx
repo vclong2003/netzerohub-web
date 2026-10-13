@@ -8,7 +8,7 @@ import {
   GreenChargingStationsMutations,
   GreenChargingStationsQueries,
 } from "@/services/service.green-charging-stations";
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Formik, FormikProps } from "formik";
 import { Col, Row, Tag } from "antd";
 import Button from "@/components/Button";
@@ -34,6 +34,7 @@ interface IImageItem {
 export default function GreenChargingStationUpdate() {
   const params = useParams<{ stationId: string }>();
   const router = useRouter();
+
   if (!params.stationId || isNaN(Number(params.stationId))) {
     router.replace("/green-charging-stations");
   }
@@ -48,36 +49,36 @@ export default function GreenChargingStationUpdate() {
     isLoading,
     isFetching,
   } = GreenChargingStationsQueries.useGetStationById(stationId);
+
   const { mutate, isPending: isUpdating } =
     GreenChargingStationsMutations.useUpdateStation(stationId);
+
   const { mutateAsync: uploadImage, isPending: isUploading } =
     StorageMutations.useUploadFile();
 
-  const [images, setImages] = useState<IImageItem[]>([]);
+  const [addedImages, setAddedImages] = useState<IImageItem[]>([]);
   const [removalImageUrls, setRemovalImageUrls] = useState<string[]>([]);
-  const isInitializedRef = useRef(false);
 
-  useEffect(() => {
-    if (station?.imageUrls && !isInitializedRef.current) {
-      isInitializedRef.current = true;
-      const initialImages: IImageItem[] = station.imageUrls.map(
-        (signedUrl) => ({
-          id: crypto.randomUUID(),
-          name: getFileNameFromUrl(signedUrl),
-          type: "EXISTING",
-          previewUrl: signedUrl,
-          signedUrl: signedUrl,
-        }),
-      );
-      setImages(initialImages);
-    }
-  }, [station]);
+  const displayImages = useMemo(() => {
+    const existing: IImageItem[] = (station?.imageUrls || [])
+      .filter((signedUrl) => !removalImageUrls.includes(signedUrl))
+      .map((signedUrl) => ({
+        id: signedUrl,
+        name: getFileNameFromUrl(signedUrl),
+        type: "EXISTING" as const,
+        previewUrl: signedUrl,
+        signedUrl,
+      }));
+
+    return [...existing, ...addedImages];
+  }, [station?.imageUrls, removalImageUrls, addedImages]);
 
   const onFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = "";
     const localUrl = URL.createObjectURL(file);
+
     try {
       const response = await uploadImage({ file });
       const newImage: IImageItem = {
@@ -87,7 +88,7 @@ export default function GreenChargingStationUpdate() {
         previewUrl: localUrl,
         bucketUrl: response.bucketUrl,
       };
-      setImages((prev) => [...prev, newImage]);
+      setAddedImages((prev) => [...prev, newImage]);
       notifySuccess(`"${file.name}" uploaded successfully`);
     } catch (error) {
       URL.revokeObjectURL(localUrl);
@@ -100,10 +101,10 @@ export default function GreenChargingStationUpdate() {
   const handleDeleteImage = (item: IImageItem) => {
     if (item.type === "EXISTING" && item.signedUrl) {
       setRemovalImageUrls((prev) => [...prev, item.signedUrl!]);
+    } else {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      setAddedImages((prev) => prev.filter((img) => img.id !== item.id));
     }
-    if (item.type === "NEW") URL.revokeObjectURL(item.previewUrl);
-
-    setImages((prev) => prev.filter((img) => img.id !== item.id));
   };
 
   const handleViewImage = (item: IImageItem) => {
@@ -115,14 +116,16 @@ export default function GreenChargingStationUpdate() {
   };
 
   const onSubmit = (values: FormValues) => {
-    const additionalImageUrls = images
-      .filter((img) => img.type === "NEW" && img.bucketUrl)
-      .map((img) => img.bucketUrl!);
+    const additionalImageUrls = addedImages
+      .map((img) => img.bucketUrl)
+      .filter((url): url is string => Boolean(url));
+
     const payload: FormValues = {
       ...values,
       additionalImageUrls,
       removalImageUrls,
     };
+
     mutate(payload, {
       onSuccess: () => {
         notifySuccess("Station updated successfully");
@@ -161,9 +164,7 @@ export default function GreenChargingStationUpdate() {
             <Col span={12}>
               {/* Name ------------------------------------ */}
               <S.FormGroup>
-                <S.LabelCol
-                  span={9}
-                  style={{ alignItems: "center", display: "flex" }}>
+                <S.LabelCol span={9}>
                   <Typo variant="body1">Name:</Typo>
                 </S.LabelCol>
                 <Col span={15}>
@@ -172,9 +173,7 @@ export default function GreenChargingStationUpdate() {
               </S.FormGroup>
               {/* Renewable ------------------------------- */}
               <S.FormGroup>
-                <S.LabelCol
-                  span={9}
-                  style={{ alignItems: "center", display: "flex" }}>
+                <S.LabelCol span={9}>
                   <Typo variant="body1">Renewable %:</Typo>
                 </S.LabelCol>
                 <Col span={15}>
@@ -187,9 +186,7 @@ export default function GreenChargingStationUpdate() {
               </S.FormGroup>
               {/* Status ------------------------------- */}
               <S.FormGroup>
-                <S.LabelCol
-                  span={9}
-                  style={{ alignItems: "center", display: "flex" }}>
+                <S.LabelCol span={9}>
                   <Typo variant="body1">Status:</Typo>
                 </S.LabelCol>
                 <Col span={9}>
@@ -206,9 +203,7 @@ export default function GreenChargingStationUpdate() {
             <Col span={12}>
               {/* Lat ----------------------------------- */}
               <S.FormGroup>
-                <S.LabelCol
-                  span={9}
-                  style={{ alignItems: "center", display: "flex" }}>
+                <S.LabelCol span={9}>
                   <Typo variant="body1">Latitude:</Typo>
                 </S.LabelCol>
                 <Col span={15}>
@@ -217,9 +212,7 @@ export default function GreenChargingStationUpdate() {
               </S.FormGroup>
               {/* Lon ----------------------------------- */}
               <S.FormGroup>
-                <S.LabelCol
-                  span={9}
-                  style={{ alignItems: "center", display: "flex" }}>
+                <S.LabelCol span={9}>
                   <Typo variant="body1">Longitude:</Typo>
                 </S.LabelCol>
                 <Col span={15}>
@@ -268,7 +261,7 @@ export default function GreenChargingStationUpdate() {
         <S.TableContainer span={24}>
           <Table
             pagination={false}
-            dataSource={images}
+            dataSource={displayImages}
             rowKey="id"
             loading={isUploading || isLoading}>
             <Column<IImageItem>
