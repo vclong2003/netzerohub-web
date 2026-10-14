@@ -1,9 +1,13 @@
+"use client";
+
 import Typo from "@/components/Typo";
 import { Modal, Select, Tag } from "antd";
 import { useState } from "react";
-import styled from "styled-components";
-import { EPollutionReportStatus } from "./_types";
-import Button from "@/components/Button";
+import {
+  EPollutionReportStatus,
+  PollutionReportMutations,
+} from "@/services/service.pollution-report";
+import { notifyError, notifySuccess } from "@/utils/utils.notification";
 
 const statusColors: Record<EPollutionReportStatus, string> = {
   [EPollutionReportStatus.Pending]: "gold",
@@ -13,35 +17,59 @@ const statusColors: Record<EPollutionReportStatus, string> = {
   [EPollutionReportStatus.Rejected]: "red",
 };
 
+interface IUpdateStatusModalProps {
+  isOpen: boolean;
+  reportIds: number[]; // 👈 Updated to string[] to match API
+  onClose: () => void;
+  onSuccess?: () => void;
+  onDelete?: () => void; // Maintained for backward compatibility
+}
+
 export function UpdateStatusModal({
   isOpen,
   reportIds,
   onClose,
+  onSuccess,
   onDelete,
-}: {
-  isOpen: boolean;
-  reportIds: number[];
-  onClose: () => void;
-  onDelete: () => void;
-}) {
+}: IUpdateStatusModalProps) {
   const [selectedStatus, setSelectedStatus] = useState<EPollutionReportStatus>(
     EPollutionReportStatus.Acknowledged,
   );
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleUpdateStatus = async () => {
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setSelectedStatus(EPollutionReportStatus.Acknowledged);
-    setIsLoading(false);
-    onDelete();
+  const { mutate: updateStatus, isPending } =
+    PollutionReportMutations.useUpdatePollutionReportStatus();
+
+  const handleUpdateStatus = () => {
+    if (!reportIds.length) return;
+
+    updateStatus(
+      {
+        ids: reportIds,
+        status: selectedStatus,
+      },
+      {
+        onSuccess: () => {
+          notifySuccess(
+            `Successfully updated ${reportIds.length} report(s) to ${selectedStatus}`,
+          );
+          onSuccess?.();
+          onDelete?.();
+        },
+        onError: (error) => {
+          notifyError(
+            (error as unknown as Error)?.message ||
+              "Failed to update report status",
+          );
+        },
+      },
+    );
   };
 
   return (
     <Modal
       open={isOpen}
       onCancel={onClose}
-      confirmLoading={isLoading}
+      confirmLoading={isPending}
       centered
       okText="Update"
       onOk={handleUpdateStatus}
