@@ -34,7 +34,13 @@ export async function generateSingleReportPdf(
       ["Title", report.title],
       ["Type", report.type],
       ["Status", report.status],
-      ["Location", report.address || "Unspecified"],
+      [
+        "Location",
+        `${report.address || "Unspecified"}` +
+          (report.latitude && report.longitude
+            ? ` (${report.latitude}, ${report.longitude})`
+            : ""),
+      ],
       ["Reported Date", dayjs(report.createdAt).format("DD/MM/YYYY HH:mm A")],
     ],
     headStyles: { fillColor: [18, 133, 133], fontSize: 9 },
