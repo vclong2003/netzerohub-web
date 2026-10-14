@@ -1,11 +1,11 @@
 import jsPDF from "jspdf";
-import { IPollutionReportItem } from "./_types";
 import { getBase64ImageFromUrl } from "@/utils/utils.file";
 import dayjs from "dayjs";
 import { jsPDFDocument } from "jspdf-autotable";
+import { IPollutionReport } from "@/services/service.pollution-report";
 
 export async function generateSingleReportPdf(
-  report: IPollutionReportItem,
+  report: IPollutionReport,
 ): Promise<jsPDF> {
   const { default: jsPDF } = await import("jspdf");
   const { default: autoTable } = await import("jspdf-autotable");

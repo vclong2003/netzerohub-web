@@ -4,14 +4,15 @@ import Button from "@/components/Button";
 import Table from "@/components/Table";
 import { TableProps, Tag, Pagination } from "antd";
 import styled from "styled-components";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import useDebounce from "@/hooks/hooks.debounce";
 import PageHeading from "./_page-heading";
 import {
   EPollutionReportStatus,
   EPollutionType,
-  IPollutionReportItem,
-} from "./_types";
+  IPollutionReport,
+  PollutionReportQueries,
+} from "@/services/service.pollution-report"; // 👈 Update to your service file path
 import { generateSingleReportPdf } from "./_pdf-helpers";
 import { UpdateStatusModal } from "./_update-status-modal";
 
@@ -31,59 +32,26 @@ const typeColors: Record<EPollutionType, string> = {
   [EPollutionType.Noise]: "magenta",
 };
 
-// --- Mock Data ---
-const ALL_MOCK_REPORTS: IPollutionReportItem[] = Array.from(
-  { length: 25 },
-  (_, i) => {
-    const index = i + 1;
-    const statuses = [
-      EPollutionReportStatus.Pending,
-      EPollutionReportStatus.Acknowledged,
-      EPollutionReportStatus.Processed,
-      EPollutionReportStatus.Resolved,
-      EPollutionReportStatus.Rejected,
-    ];
-    const types = [
-      EPollutionType.Litter,
-      EPollutionType.Water,
-      EPollutionType.Land,
-      EPollutionType.Air,
-      EPollutionType.Noise,
-    ];
-    const sampleImages = [
-      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=800&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=800&auto=format&fit=crop",
-      undefined,
-    ];
-
-    return {
-      id: index,
-      title: `Pollution Incident #${index}`,
-      description: `Reported environmental hazard near local public grounds. Visible contamination detected.`,
-      type: types[i % types.length],
-      status: statuses[i % statuses.length],
-      imageUrl: sampleImages[i % sampleImages.length],
-      address: "Northfields Ave, Keiraville NSW 2500",
-      createdAt: new Date(Date.now() - i * 86400000 * 2.5).toISOString(),
-    };
-  },
-);
-
 const PAGE_SIZE = 10;
 
 export default function PollutionReports() {
   const [page, setPage] = useState(1);
   const [searchValue, setSearchValue] = useDebounce<string>();
-  const reports = ALL_MOCK_REPORTS;
-  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  const paginatedReports = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return reports.slice(start, start + PAGE_SIZE);
-  }, [page, reports]);
+  // 1. Fetch real reports from API
+  const { data, isLoading } = PollutionReportQueries.useGetPollutionReports({
+    page: page - 1, // 0-indexed for backend pagination
+    pageSize: PAGE_SIZE,
+    search: searchValue,
+  });
 
+  const reports = data?.data || [];
+  const totalReports = data?.totalElements ? data?.totalElements : 0;
+
+  // 2. Download PDF / ZIP
   const handleDownloadReports = async () => {
     const selectedItems = reports.filter((item) =>
       selectedRowKeys.includes(item.id),
@@ -93,7 +61,7 @@ export default function PollutionReports() {
     try {
       setIsExporting(true);
 
-      // selected 1 report ----------------------
+      // Single report -> direct PDF
       if (selectedItems.length === 1) {
         const report = selectedItems[0];
         const doc = await generateSingleReportPdf(report);
@@ -101,7 +69,7 @@ export default function PollutionReports() {
         return;
       }
 
-      // selected multiple reports --------------
+      // Multiple reports -> Zip
       const { default: JSZip } = await import("jszip");
       const zip = new JSZip();
 
@@ -115,7 +83,6 @@ export default function PollutionReports() {
 
       const zipBlob = await zip.generateAsync({ type: "blob" });
 
-      // download the zip file
       const downloadUrl = URL.createObjectURL(zipBlob);
       const link = document.createElement("a");
       link.href = downloadUrl;
@@ -132,14 +99,15 @@ export default function PollutionReports() {
   };
 
   const tableProps: TableProps = {
-    dataSource: paginatedReports,
+    loading: isLoading,
+    dataSource: reports,
     pagination: false,
     rowKey: "id",
     rowSelection: {
       type: "checkbox",
       selectedRowKeys,
       onChange: (keys) => {
-        setSelectedRowKeys(keys as number[]);
+        setSelectedRowKeys(keys as string[]);
       },
     },
     columns: [
@@ -147,7 +115,7 @@ export default function PollutionReports() {
         title: "ID",
         dataIndex: "id",
         key: "id",
-        width: 40,
+        width: 80,
         align: "center",
       },
       {
@@ -232,11 +200,11 @@ export default function PollutionReports() {
         initSearchValue={searchValue}
         onSearch={(val) => {
           setSearchValue(val);
-          setPage(1);
+          setPage(1); // Reset to page 1 on search
         }}
       />
       <S.TableContainer>
-        {/* Table header -------------------------------------------- */}
+        {/* Table header buttons */}
         <S.BtnsContainer>
           <S.StatusBtn
             disabled={selectedRowKeys.length === 0}
@@ -265,14 +233,14 @@ export default function PollutionReports() {
         </S.BtnsContainer>
         <S.Divider />
 
-        {/* Table --------------------------------------------------- */}
+        {/* Table */}
         <Table {...tableProps} />
         <S.Divider />
 
-        {/* Pagination ---------------------------------------------- */}
+        {/* Server-side Pagination */}
         <Pagination
           current={page}
-          total={reports.length}
+          total={totalReports}
           pageSize={PAGE_SIZE}
           onChange={setPage}
           showSizeChanger={false}
@@ -280,13 +248,16 @@ export default function PollutionReports() {
         />
       </S.TableContainer>
 
-      {/* Update status modal --------------------------------------- */}
+      {/* Update status modal */}
       {selectedRowKeys.length > 0 && (
         <UpdateStatusModal
           isOpen={isStatusModalOpen}
-          reportIds={selectedRowKeys}
+          reportIds={selectedRowKeys.map((id) => parseInt(id, 10))}
           onClose={() => setIsStatusModalOpen(false)}
-          onDelete={() => setIsStatusModalOpen(false)}
+          onDelete={() => {
+            setSelectedRowKeys([]);
+            setIsStatusModalOpen(false);
+          }}
         />
       )}
     </S.PollutionReports>
