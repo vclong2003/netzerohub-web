@@ -1,8 +1,18 @@
 import jsPDF from "jspdf";
-import { getBase64ImageFromUrl } from "@/utils/utils.file";
+import { getBase64ImageFromUrl, loadNormalizedImage } from "@/utils/utils.file";
 import dayjs from "dayjs";
 import { jsPDFDocument } from "jspdf-autotable";
 import { IPollutionReport } from "@/services/service.pollution-report";
+
+function fitInBox(
+  imgW: number,
+  imgH: number,
+  maxW: number,
+  maxH: number,
+): { w: number; h: number } {
+  const ratio = Math.min(maxW / imgW, maxH / imgH);
+  return { w: imgW * ratio, h: imgH * ratio };
+}
 
 export async function generateSingleReportPdf(
   report: IPollutionReport,
@@ -69,16 +79,30 @@ export async function generateSingleReportPdf(
 
   // image ------------------------------------------------
   if (report.imageUrl) {
-    const base64Img = await getBase64ImageFromUrl(report.imageUrl);
-    if (base64Img) {
+    const img = await loadNormalizedImage(report.imageUrl);
+    if (img) {
+      const footerY = 285;
+      const maxW = 180;
+      const maxH = 110;
+
+      const { w, h } = fitInBox(img.width, img.height, maxW, maxH);
+
+      const needed = 4 + h + 6;
+      if (currentY + needed > footerY - 5) {
+        doc.addPage();
+        currentY = 20;
+      }
+
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
       doc.setTextColor(11, 98, 103);
       doc.text("Attached Photographic Evidence:", 14, currentY);
 
       try {
-        doc.addImage(base64Img, "JPEG", 14, currentY + 4, 120, 75);
-      } catch {}
+        doc.addImage(img.dataUrl, "JPEG", 14, currentY + 4, w, h);
+      } catch (e) {
+        console.error("Failed to add image to PDF", e);
+      }
     }
   }
 
