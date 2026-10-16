@@ -115,7 +115,7 @@ export default function PollutionReports() {
         title: "ID",
         dataIndex: "id",
         key: "id",
-        width: 80,
+        width: 50,
         align: "center",
       },
       {
@@ -132,7 +132,7 @@ export default function PollutionReports() {
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                maxWidth: 260,
+                maxWidth: 200,
               }}>
               {record.description}
             </div>
@@ -143,7 +143,7 @@ export default function PollutionReports() {
         title: "Type",
         dataIndex: "type",
         key: "type",
-        width: 100,
+        width: 80,
         render: (type: EPollutionType) => (
           <Tag color={typeColors[type] || "default"}>{type}</Tag>
         ),
@@ -166,7 +166,7 @@ export default function PollutionReports() {
         title: "Photo",
         dataIndex: "imageUrl",
         key: "imageUrl",
-        width: 80,
+        width: 100,
         align: "center",
         render: (imageUrl?: string) =>
           imageUrl ? (
@@ -183,10 +183,10 @@ export default function PollutionReports() {
           ),
       },
       {
-        title: "Reported At",
+        title: "Reported",
         dataIndex: "createdAt",
         key: "createdAt",
-        width: 140,
+        width: 80,
         render: (date: string) =>
           date ? new Date(date).toLocaleDateString("en-AU") : "-",
       },
@@ -316,8 +316,8 @@ namespace S {
   `;
 
   export const Thumbnail = styled.img`
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 4px;
     object-fit: cover;
     cursor: pointer;

@@ -13,12 +13,6 @@ const DRAWER_ITEMS = [
     label: "Overview",
     icon: OverviewIcon,
   },
-
-  {
-    to: "/pollution-reports",
-    label: "Pollution Report",
-    icon: PollutionReportIcon,
-  },
   {
     to: "/recycling-centres",
     label: "Recycling Centres",
@@ -29,11 +23,11 @@ const DRAWER_ITEMS = [
     label: "Green Charging Stations",
     icon: GreenChargingStationIcon,
   },
-  // {
-  //   to: "/accounts",
-  //   label: "Accounts",
-  //   icon: AccountIcon,
-  // },
+  {
+    to: "/pollution-reports",
+    label: "Pollution Report",
+    icon: PollutionReportIcon,
+  },
 ];
 
 export default function Drawer() {
