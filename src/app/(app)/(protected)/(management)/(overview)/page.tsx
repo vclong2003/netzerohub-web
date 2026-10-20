@@ -36,7 +36,7 @@ export default function Overview() {
                   style={{ objectFit: "contain" }}
                 />
               </S.IconWrap>
-              <Tag color="blue">Wollongong Council</Tag>
+              <Tag color="blue">Wollongong City Council</Tag>
             </S.CardTop>
             <S.ServiceTitle variant="h5">Recycling Centres</S.ServiceTitle>
             <S.BulletList>
