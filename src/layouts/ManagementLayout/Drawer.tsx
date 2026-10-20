@@ -20,7 +20,7 @@ const DRAWER_ITEMS = [
   },
   {
     to: "/green-charging-stations",
-    label: "Green Charging Stations",
+    label: "Charging Stations",
     icon: GreenChargingStationIcon,
   },
   {
